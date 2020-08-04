@@ -105,7 +105,16 @@ class MyEngineView(QWebEngineView):
         '''
         实现点击跳转链接。
         '''
-        return self  
+        #创建一个临时窗口处理 target="_blank" 类型的点击事件，使其被本窗口被打开
+        page = MyEngineView(self)
+        page.urlChanged.connect(self.on_url_changed)
+        return page
+      
+    def on_url_changed(self, url):
+        page = self.sender()
+        self.setUrl(url)
+        #删除因打开新链接创建的临时窗口，否则会产生多个窗口实例，一来增加内存消耗，二来导致一次下载点击事件被多次触发的错误
+        page.deleteLater()
 
     #以下函数里的 ：后为注释，无实际作用
 
